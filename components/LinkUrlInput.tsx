@@ -6,7 +6,7 @@ type Props = {
 export default function LinkUrlInput({ value, onChange }: Props) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor="url" className="text-sm font-medium">
+      <label htmlFor="url" className="text-sm font-medium text-[var(--text)]">
         링크
       </label>
       <input
@@ -17,7 +17,7 @@ export default function LinkUrlInput({ value, onChange }: Props) {
         placeholder="https://example.com"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-10 rounded-lg border border-foreground/20 bg-transparent px-3 text-sm outline-none focus:border-foreground"
+        className="field rounded-[10px] border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-[17px] text-[var(--text)]"
       />
     </div>
   );

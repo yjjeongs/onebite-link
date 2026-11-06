@@ -10,7 +10,7 @@ export default function LinkGrid({
 }) {
   if (links.length === 0) {
     return (
-      <p className="py-20 text-center text-sm text-foreground/50">
+      <p className="py-20 text-center text-sm text-[var(--text-sub)]">
         등록된 링크가 없습니다.
       </p>
     );
@@ -19,7 +19,7 @@ export default function LinkGrid({
   const folderNames = new Map(folders.map((f) => [f.id, f.name]));
 
   return (
-    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       {links.map((link) => (
         <LinkCard
           key={link.id}

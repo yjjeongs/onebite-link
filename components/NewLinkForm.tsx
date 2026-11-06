@@ -15,13 +15,13 @@ export default function NewLinkForm({ folders }: { folders: Folder[] }) {
         // UI only: persistence is not implemented yet
         e.preventDefault();
       }}
-      className="flex flex-col gap-5"
+      className="flex flex-col gap-6"
     >
       <LinkUrlInput value={url} onChange={setUrl} />
       <FolderSelect folders={folders} value={folderId} onChange={setFolderId} />
       <button
         type="submit"
-        className="h-10 rounded-lg bg-foreground text-sm font-medium text-background transition-opacity hover:opacity-85"
+        className="btn-accent rounded-[980px] bg-[var(--accent)] px-6 py-3 text-[17px] text-white"
       >
         저장
       </button>

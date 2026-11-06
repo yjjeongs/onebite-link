@@ -9,7 +9,7 @@ type Props = {
 export default function FolderSelect({ folders, value, onChange }: Props) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor="folder" className="text-sm font-medium">
+      <label htmlFor="folder" className="text-sm font-medium text-[var(--text)]">
         폴더
       </label>
       <select
@@ -18,7 +18,7 @@ export default function FolderSelect({ folders, value, onChange }: Props) {
         required
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-10 rounded-lg border border-foreground/20 bg-background px-3 text-sm outline-none focus:border-foreground"
+        className="field rounded-[10px] border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-[17px] text-[var(--text)]"
       >
         <option value="" disabled>
           폴더를 선택하세요

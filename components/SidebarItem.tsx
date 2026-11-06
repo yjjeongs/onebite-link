@@ -16,15 +16,15 @@ export default function SidebarItem({ label, href, count }: Props) {
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+      className={`item-hover flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left text-[15px] ${
         active
-          ? "bg-foreground/10 font-semibold"
-          : "text-foreground/70 hover:bg-foreground/5"
+          ? "bg-[var(--badge-bg)] font-semibold text-[var(--text)]"
+          : "text-[var(--text)]"
       }`}
     >
       <span className="truncate">{label}</span>
       {count !== undefined && (
-        <span className="ml-2 text-xs text-foreground/50">{count}</span>
+        <span className="ml-2 text-[13px] text-[var(--text-sub)]">{count}</span>
       )}
     </Link>
   );
