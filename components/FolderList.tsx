@@ -15,12 +15,12 @@ export default function FolderList({ folders }: { folders: Folder[] }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!target) return;
     const wasViewing = pathname === `/folder/${target.id}`;
-    removeFolder(target.id);
+    const ok = await removeFolder(target.id);
     setTarget(null);
-    if (wasViewing) router.push("/");
+    if (ok && wasViewing) router.push("/");
   };
 
   return (

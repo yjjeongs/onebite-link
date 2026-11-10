@@ -9,7 +9,7 @@ const supabase = createClient();
 type FoldersContextValue = {
   folders: Folder[];
   addFolder: (name: string) => Promise<void>;
-  removeFolder: (id: string) => void;
+  removeFolder: (id: string) => Promise<boolean>;
   renameFolder: (id: string, name: string) => void;
 };
 
@@ -50,8 +50,14 @@ export function FoldersProvider({ children }: { children: React.ReactNode }) {
     ]);
   };
 
-  const removeFolder = (id: string) => {
+  const removeFolder = async (id: string) => {
+    const { error } = await supabase.from("folder").delete().eq("id", Number(id));
+    if (error) {
+      console.error(error);
+      return false;
+    }
     setFolders((prev) => prev.filter((f) => f.id !== id));
+    return true;
   };
 
   const renameFolder = (id: string, name: string) => {
