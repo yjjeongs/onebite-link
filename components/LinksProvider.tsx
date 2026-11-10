@@ -28,7 +28,7 @@ const toLinkItem = (row: LinkRow): LinkItem => ({
 
 type LinksContextValue = {
   links: LinkItem[];
-  removeLink: (id: string) => void;
+  removeLink: (id: string) => Promise<boolean>;
   updateLink: (
     id: string,
     values: Pick<LinkItem, "folderId" | "title" | "description">,
@@ -76,8 +76,14 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
     return true;
   };
 
-  const removeLink = (id: string) => {
+  const removeLink = async (id: string) => {
+    const { error } = await supabase.from("link").delete().eq("id", Number(id));
+    if (error) {
+      console.error(error);
+      return false;
+    }
     setLinks((prev) => prev.filter((l) => l.id !== id));
+    return true;
   };
 
   const updateLink: LinksContextValue["updateLink"] = async (id, values) => {

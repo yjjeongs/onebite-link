@@ -52,8 +52,8 @@ export default function LinkGrid({ folderId }: { folderId?: string }) {
         title="링크 삭제"
         message={`‘${target.title}’ 링크를 정말 삭제하시겠습니까?`}
         onClose={() => setTarget(null)}
-        onConfirm={() => {
-          removeLink(target.id);
+        onConfirm={async () => {
+          await removeLink(target.id);
           setTarget(null);
         }}
       />
