@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import EditLinkModal from "./EditLinkModal";
 import { useFolders } from "./FoldersProvider";
 import LinkCard from "./LinkCard";
 import { useLinks } from "./LinksProvider";
 import type { LinkItem } from "@/lib/mock-data";
 
 export default function LinkGrid({ folderId }: { folderId?: string }) {
-  const { links, removeLink } = useLinks();
+  const { links, removeLink, updateLink } = useLinks();
+  const [editTarget, setEditTarget] = useState<LinkItem | null>(null);
   const [target, setTarget] = useState<LinkItem | null>(null);
   const { folders } = useFolders();
   const visible = folderId ? links.filter((l) => l.folderId === folderId) : links;
@@ -31,10 +33,20 @@ export default function LinkGrid({ folderId }: { folderId?: string }) {
           key={link.id}
           link={link}
           folderName={folderNames.get(link.folderId)}
+          onEdit={() => setEditTarget(link)}
           onDelete={() => setTarget(link)}
         />
       ))}
     </div>
+    {editTarget && (
+      <EditLinkModal
+        key={editTarget.id}
+        link={editTarget}
+        folders={folders}
+        onClose={() => setEditTarget(null)}
+        onSave={(values) => updateLink(editTarget.id, values)}
+      />
+    )}
     {target && (
       <ConfirmDeleteModal
         title="링크 삭제"

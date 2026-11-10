@@ -6,10 +6,12 @@ import type { LinkItem } from "@/lib/mock-data";
 export default function LinkCard({
   link,
   folderName,
+  onEdit,
   onDelete,
 }: {
   link: LinkItem;
   folderName?: string;
+  onEdit?: () => void;
   onDelete?: () => void;
 }) {
   const [imgFailed, setImgFailed] = useState(false);
@@ -55,6 +57,19 @@ export default function LinkCard({
         </div>
       </div>
     </a>
+    {onEdit && (
+      <button
+        type="button"
+        aria-label={`${link.title} 링크 수정`}
+        onClick={onEdit}
+        className="absolute right-12 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--bg)]/90 text-[var(--text-sub)] opacity-0 shadow-sm transition-opacity hover:text-[var(--accent)] focus-visible:opacity-100 group-hover:opacity-100"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+        </svg>
+      </button>
+    )}
     {onDelete && (
       <button
         type="button"

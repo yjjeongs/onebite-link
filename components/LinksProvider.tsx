@@ -6,6 +6,10 @@ import { links as initialLinks, type LinkItem } from "@/lib/mock-data";
 type LinksContextValue = {
   links: LinkItem[];
   removeLink: (id: string) => void;
+  updateLink: (
+    id: string,
+    values: Partial<Pick<LinkItem, "folderId" | "title" | "description">>,
+  ) => void;
   addLink: (link: Omit<LinkItem, "id" | "createdAt">) => void;
 };
 
@@ -30,8 +34,12 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
     setLinks((prev) => prev.filter((l) => l.id !== id));
   };
 
+  const updateLink: LinksContextValue["updateLink"] = (id, values) => {
+    setLinks((prev) => prev.map((l) => (l.id === id ? { ...l, ...values } : l)));
+  };
+
   return (
-    <LinksContext.Provider value={{ links, addLink, removeLink }}>
+    <LinksContext.Provider value={{ links, addLink, removeLink, updateLink }}>
       {children}
     </LinksContext.Provider>
   );
