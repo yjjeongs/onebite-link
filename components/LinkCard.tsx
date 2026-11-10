@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import type { LinkItem } from "@/lib/mock-data";
 
 export default function LinkCard({
@@ -7,6 +10,7 @@ export default function LinkCard({
   link: LinkItem;
   folderName?: string;
 }) {
+  const [imgFailed, setImgFailed] = useState(false);
   const host = new URL(link.url).hostname.replace(/^www\./, "");
 
   return (
@@ -16,8 +20,20 @@ export default function LinkCard({
       rel="noopener noreferrer"
       className="card-hover group flex flex-col overflow-hidden rounded-[12px] bg-[var(--card)]"
     >
-      <div className="flex aspect-video items-center justify-center bg-[var(--badge-bg)] text-4xl font-semibold tracking-tight text-[var(--text-sub)]">
-        {host.charAt(0).toUpperCase()}
+      <div className="flex aspect-video items-center justify-center overflow-hidden bg-[var(--badge-bg)] text-4xl font-semibold tracking-tight text-[var(--text-sub)]">
+        {link.thumbnail && !imgFailed ? (
+          // eslint-disable-next-line @next/next/no-img-element -- arbitrary external hosts
+          <img
+            src={link.thumbnail}
+            alt=""
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            onError={() => setImgFailed(true)}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          host.charAt(0).toUpperCase()
+        )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-6">
         <h3 className="title-hover truncate text-[19px] font-semibold leading-tight tracking-tight text-[var(--text)]">

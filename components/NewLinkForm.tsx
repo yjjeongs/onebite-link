@@ -1,19 +1,49 @@
 "use client";
 
 import { useState } from "react";
-import type { Folder } from "@/lib/mock-data";
+import { useRouter } from "next/navigation";
 import FolderSelect from "./FolderSelect";
+import { useFolders } from "./FoldersProvider";
 import LinkUrlInput from "./LinkUrlInput";
+import { useLinks } from "./LinksProvider";
 
-export default function NewLinkForm({ folders }: { folders: Folder[] }) {
+type OgData = { title: string; description: string; thumbnail: string | null };
+
+async function fetchOg(url: string): Promise<OgData | null> {
+  try {
+    const res = await fetch(`/api/og?url=${encodeURIComponent(url)}`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export default function NewLinkForm() {
+  const { folders } = useFolders();
+  const { addLink } = useLinks();
+  const router = useRouter();
   const [url, setUrl] = useState("");
   const [folderId, setFolderId] = useState("");
+  const [saving, setSaving] = useState(false);
 
   return (
     <form
-      onSubmit={(e) => {
-        // UI only: persistence is not implemented yet
+      onSubmit={async (e) => {
         e.preventDefault();
+        if (saving) return;
+        setSaving(true);
+        const og = await fetchOg(url);
+        // Fall back to the hostname when Open Graph info can't be fetched
+        const host = new URL(url).hostname.replace(/^www\./, "");
+        addLink({
+          url,
+          folderId,
+          title: og?.title || host,
+          description: og?.description ?? "",
+          thumbnail: og?.thumbnail ?? undefined,
+        });
+        router.push("/");
       }}
       className="flex flex-col gap-6"
     >
@@ -21,9 +51,10 @@ export default function NewLinkForm({ folders }: { folders: Folder[] }) {
       <FolderSelect folders={folders} value={folderId} onChange={setFolderId} />
       <button
         type="submit"
-        className="btn-accent rounded-[980px] bg-[var(--accent)] px-6 py-3 text-[17px] text-white"
+        disabled={saving}
+        className="btn-accent rounded-[980px] bg-[var(--accent)] px-6 py-3 text-[17px] text-white disabled:opacity-60"
       >
-        저장
+        {saving ? "저장 중..." : "저장"}
       </button>
     </form>
   );

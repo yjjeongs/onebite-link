@@ -1,14 +1,15 @@
-import type { Folder, LinkItem } from "@/lib/mock-data";
-import LinkCard from "./LinkCard";
+"use client";
 
-export default function LinkGrid({
-  links,
-  folders,
-}: {
-  links: LinkItem[];
-  folders: Folder[];
-}) {
-  if (links.length === 0) {
+import { useFolders } from "./FoldersProvider";
+import LinkCard from "./LinkCard";
+import { useLinks } from "./LinksProvider";
+
+export default function LinkGrid({ folderId }: { folderId?: string }) {
+  const { links } = useLinks();
+  const { folders } = useFolders();
+  const visible = folderId ? links.filter((l) => l.folderId === folderId) : links;
+
+  if (visible.length === 0) {
     return (
       <p className="py-20 text-center text-sm text-[var(--text-sub)]">
         등록된 링크가 없습니다.
@@ -20,7 +21,7 @@ export default function LinkGrid({
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-      {links.map((link) => (
+      {visible.map((link) => (
         <LinkCard
           key={link.id}
           link={link}

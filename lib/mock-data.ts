@@ -11,6 +11,7 @@ export type LinkItem = {
   url: string;
   folderId: string;
   createdAt: string;
+  thumbnail?: string;
 };
 
 export const folders: Folder[] = [
