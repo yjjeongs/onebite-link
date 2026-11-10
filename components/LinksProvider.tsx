@@ -31,8 +31,8 @@ type LinksContextValue = {
   removeLink: (id: string) => void;
   updateLink: (
     id: string,
-    values: Partial<Pick<LinkItem, "folderId" | "title" | "description">>,
-  ) => void;
+    values: Pick<LinkItem, "folderId" | "title" | "description">,
+  ) => Promise<boolean>;
   addLink: (link: Omit<LinkItem, "id" | "createdAt">) => Promise<boolean>;
 };
 
@@ -80,8 +80,21 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
     setLinks((prev) => prev.filter((l) => l.id !== id));
   };
 
-  const updateLink: LinksContextValue["updateLink"] = (id, values) => {
+  const updateLink: LinksContextValue["updateLink"] = async (id, values) => {
+    const { error } = await supabase
+      .from("link")
+      .update({
+        title: values.title,
+        description: values.description,
+        folder_id: values.folderId ? Number(values.folderId) : null,
+      })
+      .eq("id", Number(id));
+    if (error) {
+      console.error(error);
+      return false;
+    }
     setLinks((prev) => prev.map((l) => (l.id === id ? { ...l, ...values } : l)));
+    return true;
   };
 
   return (

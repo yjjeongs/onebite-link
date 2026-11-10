@@ -10,13 +10,14 @@ type Props = {
   link: LinkItem;
   folders: Folder[];
   onClose: () => void;
-  onSave: (values: Values) => void;
+  onSave: (values: Values) => Promise<boolean>;
 };
 
 export default function EditLinkModal({ link, folders, onClose, onSave }: Props) {
   const [folderId, setFolderId] = useState(link.folderId);
   const [title, setTitle] = useState(link.title);
   const [description, setDescription] = useState(link.description);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -41,11 +42,17 @@ export default function EditLinkModal({ link, folders, onClose, onSave }: Props)
         role="dialog"
         aria-modal="true"
         aria-labelledby="edit-link-title"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
-          if (!trimmedTitle) return;
-          onSave({ folderId, title: trimmedTitle, description: description.trim() });
-          onClose();
+          if (!trimmedTitle || saving) return;
+          setSaving(true);
+          const ok = await onSave({
+            folderId,
+            title: trimmedTitle,
+            description: description.trim(),
+          });
+          if (ok) onClose();
+          else setSaving(false);
         }}
         className="flex w-full max-w-md flex-col gap-5 rounded-[18px] bg-[var(--bg)] p-6 shadow-xl"
       >
@@ -90,7 +97,7 @@ export default function EditLinkModal({ link, folders, onClose, onSave }: Props)
           </button>
           <button
             type="submit"
-            disabled={!trimmedTitle}
+            disabled={!trimmedTitle || saving}
             className="btn-accent rounded-[980px] bg-[var(--accent)] px-5 py-2 text-[15px] text-white disabled:opacity-40"
           >
             저장
