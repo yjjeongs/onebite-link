@@ -5,10 +5,17 @@ import { useEffect, useState } from "react";
 type Props = {
   onClose: () => void;
   onSave: (name: string) => void;
+  title?: string;
+  initialName?: string;
 };
 
-export default function NewFolderModal({ onClose, onSave }: Props) {
-  const [name, setName] = useState("");
+export default function NewFolderModal({
+  onClose,
+  onSave,
+  title = "새 폴더",
+  initialName = "",
+}: Props) {
+  const [name, setName] = useState(initialName);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -43,7 +50,7 @@ export default function NewFolderModal({ onClose, onSave }: Props) {
           id="new-folder-title"
           className="text-[21px] font-semibold tracking-tight text-[var(--text)]"
         >
-          새 폴더
+          {title}
         </h2>
         <div className="flex flex-col gap-1.5">
           <label htmlFor="folder-name" className="text-sm font-medium text-[var(--text)]">

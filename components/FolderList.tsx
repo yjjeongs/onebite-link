@@ -4,11 +4,13 @@ import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { Folder } from "@/lib/mock-data";
 import DeleteFolderModal from "./DeleteFolderModal";
+import NewFolderModal from "./NewFolderModal";
 import { useFolders } from "./FoldersProvider";
 import SidebarItem from "./SidebarItem";
 
 export default function FolderList({ folders }: { folders: Folder[] }) {
-  const { removeFolder } = useFolders();
+  const { removeFolder, renameFolder } = useFolders();
+  const [editTarget, setEditTarget] = useState<Folder | null>(null);
   const [target, setTarget] = useState<Folder | null>(null);
   const pathname = usePathname();
   const router = useRouter();
@@ -31,6 +33,27 @@ export default function FolderList({ folders }: { folders: Folder[] }) {
               href={`/folder/${folder.id}`}
               count={folder.count}
             />
+            <button
+              type="button"
+              aria-label={`${folder.name} 폴더 이름 수정`}
+              onClick={() => setEditTarget(folder)}
+              className="absolute right-16 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md text-[var(--text-sub)] opacity-0 transition-opacity hover:text-[var(--accent)] focus-visible:opacity-100 group-hover:opacity-100"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+              </svg>
+            </button>
             <button
               type="button"
               aria-label={`${folder.name} 폴더 삭제`}
@@ -57,6 +80,15 @@ export default function FolderList({ folders }: { folders: Folder[] }) {
           </li>
         ))}
       </ul>
+      {editTarget && (
+        <NewFolderModal
+          key={editTarget.id}
+          title="폴더 이름 수정"
+          initialName={editTarget.name}
+          onClose={() => setEditTarget(null)}
+          onSave={(name) => renameFolder(editTarget.id, name)}
+        />
+      )}
       {target && (
         <DeleteFolderModal
           folderName={target.name}
