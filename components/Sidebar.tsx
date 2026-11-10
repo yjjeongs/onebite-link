@@ -1,14 +1,12 @@
-import type { Folder } from "@/lib/mock-data";
+"use client";
+
+import { useFolders } from "./FoldersProvider";
 import FolderList from "./FolderList";
 import SidebarItem from "./SidebarItem";
 
-export default function Sidebar({
-  folders,
-  totalCount,
-}: {
-  folders: Folder[];
-  totalCount: number;
-}) {
+export default function Sidebar({ totalCount }: { totalCount: number }) {
+  const { folders } = useFolders();
+
   return (
     <aside className="hidden w-60 shrink-0 flex-col gap-4 overflow-y-auto border-r border-[var(--divider)] bg-[var(--bg)] p-4 md:flex">
       <SidebarItem label="All" href="/" count={totalCount} />
