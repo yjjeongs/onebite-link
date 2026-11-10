@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { Folder } from "@/lib/mock-data";
-import DeleteFolderModal from "./DeleteFolderModal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import NewFolderModal from "./NewFolderModal";
 import { useFolders } from "./FoldersProvider";
 import SidebarItem from "./SidebarItem";
@@ -90,8 +90,9 @@ export default function FolderList({ folders }: { folders: Folder[] }) {
         />
       )}
       {target && (
-        <DeleteFolderModal
-          folderName={target.name}
+        <ConfirmDeleteModal
+          title="폴더 삭제"
+          message={`‘${target.name}’ 폴더를 정말 삭제하시겠습니까?`}
           onClose={() => setTarget(null)}
           onConfirm={confirmDelete}
         />

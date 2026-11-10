@@ -5,6 +5,7 @@ import { links as initialLinks, type LinkItem } from "@/lib/mock-data";
 
 type LinksContextValue = {
   links: LinkItem[];
+  removeLink: (id: string) => void;
   addLink: (link: Omit<LinkItem, "id" | "createdAt">) => void;
 };
 
@@ -25,8 +26,12 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
     ]);
   };
 
+  const removeLink = (id: string) => {
+    setLinks((prev) => prev.filter((l) => l.id !== id));
+  };
+
   return (
-    <LinksContext.Provider value={{ links, addLink }}>
+    <LinksContext.Provider value={{ links, addLink, removeLink }}>
       {children}
     </LinksContext.Provider>
   );

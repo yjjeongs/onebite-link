@@ -6,19 +6,22 @@ import type { LinkItem } from "@/lib/mock-data";
 export default function LinkCard({
   link,
   folderName,
+  onDelete,
 }: {
   link: LinkItem;
   folderName?: string;
+  onDelete?: () => void;
 }) {
   const [imgFailed, setImgFailed] = useState(false);
   const host = new URL(link.url).hostname.replace(/^www\./, "");
 
   return (
+    <div className="card-hover group relative flex flex-col overflow-hidden rounded-[12px] bg-[var(--card)]">
     <a
       href={link.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="card-hover group flex flex-col overflow-hidden rounded-[12px] bg-[var(--card)]"
+      className="flex flex-1 flex-col"
     >
       <div className="flex aspect-video items-center justify-center overflow-hidden bg-[var(--badge-bg)] text-4xl font-semibold tracking-tight text-[var(--text-sub)]">
         {link.thumbnail && !imgFailed ? (
@@ -52,5 +55,21 @@ export default function LinkCard({
         </div>
       </div>
     </a>
+    {onDelete && (
+      <button
+        type="button"
+        aria-label={`${link.title} 링크 삭제`}
+        onClick={onDelete}
+        className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--bg)]/90 text-[var(--text-sub)] opacity-0 shadow-sm transition-opacity hover:text-[var(--error)] focus-visible:opacity-100 group-hover:opacity-100"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M3 6h18" />
+          <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+          <path d="M10 11v6M14 11v6" />
+        </svg>
+      </button>
+    )}
+    </div>
   );
 }
