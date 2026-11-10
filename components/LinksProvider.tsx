@@ -1,7 +1,30 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
-import { links as initialLinks, type LinkItem } from "@/lib/mock-data";
+import { createContext, useContext, useEffect, useState } from "react";
+import type { LinkItem } from "@/lib/mock-data";
+import { createClient } from "@/utils/supabase/client";
+
+const supabase = createClient();
+
+type LinkRow = {
+  id: number;
+  url: string;
+  title: string | null;
+  description: string | null;
+  thumbnail_url: string | null;
+  create_at: string;
+  folder_id: number | null;
+};
+
+const toLinkItem = (row: LinkRow): LinkItem => ({
+  id: String(row.id),
+  url: row.url,
+  title: row.title ?? row.url,
+  description: row.description ?? "",
+  thumbnail: row.thumbnail_url ?? undefined,
+  folderId: row.folder_id === null ? "" : String(row.folder_id),
+  createdAt: row.create_at.slice(0, 10),
+});
 
 type LinksContextValue = {
   links: LinkItem[];
@@ -10,24 +33,47 @@ type LinksContextValue = {
     id: string,
     values: Partial<Pick<LinkItem, "folderId" | "title" | "description">>,
   ) => void;
-  addLink: (link: Omit<LinkItem, "id" | "createdAt">) => void;
+  addLink: (link: Omit<LinkItem, "id" | "createdAt">) => Promise<boolean>;
 };
 
 const LinksContext = createContext<LinksContextValue | null>(null);
 
 export function LinksProvider({ children }: { children: React.ReactNode }) {
-  const [links, setLinks] = useState<LinkItem[]>(initialLinks);
+  const [links, setLinks] = useState<LinkItem[]>([]);
 
-  const addLink: LinksContextValue["addLink"] = (link) => {
-    // UI only: persistence is not implemented yet
-    setLinks((prev) => [
-      {
-        ...link,
-        id: crypto.randomUUID(),
-        createdAt: new Date().toISOString().slice(0, 10),
-      },
-      ...prev,
-    ]);
+  useEffect(() => {
+    supabase
+      .from("link")
+      .select("*")
+      .order("create_at", { ascending: false })
+      .order("id", { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        setLinks((data as LinkRow[]).map(toLinkItem));
+      });
+  }, []);
+
+  const addLink: LinksContextValue["addLink"] = async (link) => {
+    const { data, error } = await supabase
+      .from("link")
+      .insert({
+        url: link.url,
+        title: link.title,
+        description: link.description,
+        thumbnail_url: link.thumbnail ?? null,
+        folder_id: link.folderId ? Number(link.folderId) : null,
+      })
+      .select("*")
+      .single();
+    if (error) {
+      console.error(error);
+      return false;
+    }
+    setLinks((prev) => [toLinkItem(data as LinkRow), ...prev]);
+    return true;
   };
 
   const removeLink = (id: string) => {

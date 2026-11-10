@@ -36,14 +36,15 @@ export default function NewLinkForm() {
         const og = await fetchOg(url);
         // Fall back to the hostname when Open Graph info can't be fetched
         const host = new URL(url).hostname.replace(/^www\./, "");
-        addLink({
+        const ok = await addLink({
           url,
           folderId,
           title: og?.title || host,
           description: og?.description ?? "",
           thumbnail: og?.thumbnail ?? undefined,
         });
-        router.push("/");
+        if (ok) router.push("/");
+        else setSaving(false);
       }}
       className="flex flex-col gap-6"
     >
