@@ -1,11 +1,14 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
-import { folders as initialFolders, type Folder } from "@/lib/mock-data";
+import { createContext, useContext, useEffect, useState } from "react";
+import type { Folder } from "@/lib/mock-data";
+import { createClient } from "@/utils/supabase/client";
+
+const supabase = createClient();
 
 type FoldersContextValue = {
   folders: Folder[];
-  addFolder: (name: string) => void;
+  addFolder: (name: string) => Promise<void>;
   removeFolder: (id: string) => void;
   renameFolder: (id: string, name: string) => void;
 };
@@ -13,13 +16,37 @@ type FoldersContextValue = {
 const FoldersContext = createContext<FoldersContextValue | null>(null);
 
 export function FoldersProvider({ children }: { children: React.ReactNode }) {
-  const [folders, setFolders] = useState<Folder[]>(initialFolders);
+  const [folders, setFolders] = useState<Folder[]>([]);
 
-  const addFolder = (name: string) => {
-    // UI only: persistence is not implemented yet
+  useEffect(() => {
+    supabase
+      .from("folder")
+      .select("id, name")
+      .order("id", { ascending: true })
+      .then(({ data, error }) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        setFolders(
+          (data ?? []).map((row) => ({ id: String(row.id), name: row.name, count: 0 })),
+        );
+      });
+  }, []);
+
+  const addFolder = async (name: string) => {
+    const { data, error } = await supabase
+      .from("folder")
+      .insert({ name })
+      .select("id, name")
+      .single();
+    if (error) {
+      console.error(error);
+      return;
+    }
     setFolders((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), name, count: 0 },
+      { id: String(data.id), name: data.name, count: 0 },
     ]);
   };
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 type Props = {
   onClose: () => void;
-  onSave: (name: string) => void;
+  onSave: (name: string) => void | Promise<void>;
   title?: string;
   initialName?: string;
 };
@@ -16,6 +16,7 @@ export default function NewFolderModal({
   initialName = "",
 }: Props) {
   const [name, setName] = useState(initialName);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -38,11 +39,16 @@ export default function NewFolderModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="new-folder-title"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
-          if (!trimmed) return;
-          onSave(trimmed);
-          onClose();
+          if (!trimmed || saving) return;
+          setSaving(true);
+          try {
+            await onSave(trimmed);
+            onClose();
+          } finally {
+            setSaving(false);
+          }
         }}
         className="flex w-full max-w-sm flex-col gap-6 rounded-[18px] bg-[var(--bg)] p-6 shadow-xl"
       >
@@ -75,7 +81,7 @@ export default function NewFolderModal({
           </button>
           <button
             type="submit"
-            disabled={!trimmed}
+            disabled={!trimmed || saving}
             className="btn-accent rounded-[980px] bg-[var(--accent)] px-5 py-2 text-[15px] text-white disabled:opacity-40"
           >
             저장
