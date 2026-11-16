@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import Toast from "./Toast";
@@ -50,6 +51,14 @@ export default function LoginForm() {
     }
   };
 
+  const onKakaoLogin = async () => {
+    const { error } = await createClient().auth.signInWithOAuth({
+      provider: "kakao",
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=/` },
+    });
+    if (error) setError("카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.");
+  };
+
   return (
     <>
       {error && <Toast message={error} onClose={() => setError(null)} />}
@@ -88,6 +97,19 @@ export default function LoginForm() {
           className="btn-accent mt-1 rounded-[980px] bg-[var(--accent)] px-5 py-3 text-[17px] text-white disabled:opacity-40"
         >
           로그인
+        </button>
+        <button
+          type="button"
+          onClick={onKakaoLogin}
+          aria-label="카카오 로그인"
+          className="mx-auto -mt-2 block"
+        >
+          <Image
+            src="/kakao_login_large_wide.png"
+            alt="카카오 로그인"
+            width={300}
+            height={45}
+          />
         </button>
       </form>
     </>
