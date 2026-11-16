@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { useFolders } from "./FoldersProvider";
 import { useLinks } from "./LinksProvider";
@@ -52,6 +53,12 @@ export default function Sidebar() {
         </svg>
         로그아웃
       </button>
+      <Link
+        href="/privacy"
+        className="px-3 text-xs text-[var(--text-sub)] hover:underline"
+      >
+        개인정보 처리방침
+      </Link>
     </aside>
   );
 }
