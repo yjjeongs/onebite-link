@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { LinkItem } from "@/lib/mock-data";
 import { createClient } from "@/utils/supabase/client";
+import { useUserId } from "@/utils/supabase/useUserId";
 
 const supabase = createClient();
 
@@ -39,22 +40,38 @@ type LinksContextValue = {
 const LinksContext = createContext<LinksContextValue | null>(null);
 
 export function LinksProvider({ children }: { children: React.ReactNode }) {
-  const [links, setLinks] = useState<LinkItem[]>([]);
+  const userId = useUserId();
+  // Data is tagged with its owner so a different account never sees stale rows.
+  const [state, setState] = useState<{ owner: string | null; items: LinkItem[] }>({
+    owner: null,
+    items: [],
+  });
+  const links = state.owner === userId ? state.items : [];
+  const setLinks = (update: (prev: LinkItem[]) => LinkItem[]) =>
+    setState((s) => ({ owner: userId, items: update(s.owner === userId ? s.items : []) }));
 
+  // Reload from scratch whenever the signed-in account changes.
   useEffect(() => {
+    let cancelled = false;
+    if (!userId) return;
     supabase
       .from("link")
       .select("*")
+      .eq("user_id", userId)
       .order("create_at", { ascending: false })
       .order("id", { ascending: false })
       .then(({ data, error }) => {
+        if (cancelled) return;
         if (error) {
           console.error(error);
           return;
         }
-        setLinks((data as LinkRow[]).map(toLinkItem));
+        setState({ owner: userId, items: (data as LinkRow[]).map(toLinkItem) });
       });
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   const addLink: LinksContextValue["addLink"] = async (link) => {
     const { data, error } = await supabase
