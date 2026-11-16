@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import ForgotPasswordForm from "@/components/ForgotPasswordForm";
+
+export const metadata: Metadata = {
+  title: "비밀번호 찾기",
+  description: "비밀번호 재설정 메일을 받아보세요.",
+};
 
 export default async function ForgotPasswordPage({
   searchParams,
