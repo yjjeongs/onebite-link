@@ -8,6 +8,11 @@ export default function LoginPage() {
         한입 링크
       </h1>
       <LoginForm />
+      <p className="text-center text-[15px]">
+        <Link href="/forgot-password" className="text-[var(--text-sub)] hover:underline">
+          비밀번호를 잊으셨나요?
+        </Link>
+      </p>
       <p className="text-center text-[15px] text-[var(--text-sub)]">
         계정이 없으신가요?{" "}
         <Link href="/signup" className="text-[var(--accent)] hover:underline">

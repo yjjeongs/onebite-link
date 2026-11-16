@@ -28,7 +28,11 @@ export const createClient = async (request: NextRequest) => {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const isAuthPage = pathname === "/login" || pathname === "/signup";
+  const isAuthPage =
+    pathname === "/login" ||
+    pathname === "/signup" ||
+    pathname === "/forgot-password" ||
+    pathname === "/auth/callback";
 
   // Only signed-in users may access the index, folder and new-link pages.
   if (!user && !isAuthPage) {
